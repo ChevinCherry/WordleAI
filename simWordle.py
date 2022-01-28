@@ -1,28 +1,24 @@
 
 import random
 from termcolor import colored
-from processWords import validWord
 
 StateToColor = {"correct": "green", "wrongPlace": "yellow", "incorrect": "white"}
 
 class Wordle:
 
     def __init__(self, wordle, maxGuesses):
+        
+        self.validWords = open('validWords.txt').read().splitlines()
+        if wordle not in self.validWords:
+            raise "Invalid Wordle choice!"
         self.wordle = wordle
         self.guessNum = 0
         self.maxGuesses = maxGuesses
         self.win = False
     
-    def validWord(word: str):
-        alphabetStart = ord('a')
-        alphabetEnd = ord('z')
-        if len(word) != 5:
-            return False
-        for letter in word:
-            charCode = ord(letter)
-            if charCode < alphabetStart or charCode > alphabetEnd:
-                return False
-        return True
+    def validWord(self, word: str):
+        return word in self.validWords
+        
     
     def getColoredGuess(self, states, guess):
         string = ""
@@ -45,7 +41,7 @@ class Wordle:
     def makeGuess(self, guess):
         if (self.guessNum >= self.maxGuesses):
             raise "Cannot make guess! Game is over."
-        if not validWord(guess):
+        if not self.validWord(guess):
             raise "Invalid guess!"
         validity: list[str] = [None] * 5
         for index, letter in enumerate(guess):
@@ -74,7 +70,7 @@ if (__name__ == "__main__"):
         while not validGuess:
             print("Enter guess:")
             guess = input()
-            validGuess = validWord(guess)
+            validGuess = game.validWord(guess)
             if not validGuess:
                 print("Invalid.")
         states = game.makeGuess(guess)

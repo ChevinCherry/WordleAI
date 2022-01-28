@@ -30,8 +30,11 @@ class WordleAI:
         for index, state in enumerate(states):
             self.validWords = [word for word in self.validWords if self.filterByLetter(word, state, guess[index], index, states)]
 
+    def scoreWord(self, word):
+        self.validWords
+
     def makeGuess(self):
-        return random.choice(self.validWords).strip("\n")
+            return random.choice(self.validWords).strip("\n")
         
     def play(self):
         guessNum = 0
