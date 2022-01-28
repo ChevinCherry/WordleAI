@@ -8,18 +8,27 @@ class WordleAI:
         words = open("validWords.txt")
         self.validWords = words.readlines()
         words.close()
+    
+    def __checkForIncorrect(self, word, letter, states):
+        if letter not in word:
+            return True
+        for index, wLetter in enumerate(word):
+            if wLetter == letter and states[index] != "correct":
+                return False
+        return True
 
-    def filterByLetter(self, word, state, letter, index):
+
+    def filterByLetter(self, word, state, letter, index, states):
         if state == "correct":
             return word[index] == letter
         if state == "wrongPlace":
             return letter in word and word[index] != letter
         if state == "incorrect":
-            return letter not in word
+            return self.__checkForIncorrect(word, letter, states)
 
     def filterValidWords(self, guess, states):
         for index, state in enumerate(states):
-            self.validWords = [word for word in self.validWords if self.filterByLetter(word, state, guess[index], index)]
+            self.validWords = [word for word in self.validWords if self.filterByLetter(word, state, guess[index], index, states)]
 
     def makeGuess(self):
         return random.choice(self.validWords).strip("\n")
@@ -34,6 +43,6 @@ class WordleAI:
             print(self.wordle.getColoredGuess(states, AIguess))
             guessNum += 1
 
-AI = WordleAI(Wordle("tests", 6))
+AI = WordleAI(Wordle("perky", 6))
 AI.play()
         
