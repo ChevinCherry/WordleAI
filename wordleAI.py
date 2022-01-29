@@ -1,12 +1,50 @@
 from simWordle import Wordle
 import random
 
+### WORD SCORING POLICIES ###
+def scoreWordsByLetterPlacementFrequency(words):
+    letterCounts = [{}, {}, {}, {}, {}]
+    for word in words:
+        for index, letter in enumerate(word):
+            if letter in letterCounts[index]:
+                letterCounts[index][letter] += 1
+            else:
+                letterCounts[index][letter] = 1
+    def fun(word):
+        score = 0
+        seen = []
+        for index, letter in enumerate(word):
+            if letter not in seen:
+                score += letterCounts[index][letter]
+                seen.append(letter)
+        return score
+    return fun
+    
+def scoreWordsByLetterFrequency(words):
+    letterCounts = {}
+    for word in words:
+        for letter in word:
+            if letter in letterCounts:
+                letterCounts[letter] += 1
+            else:
+                letterCounts[letter] = 1
+    def fun(word):
+        score = 0
+        seen = []
+        for letter in word:
+            if letter not in seen:
+                score += letterCounts[letter]
+                seen.append(letter)
+        return score
+    return fun
+
 class WordleAI:
 
-    def __init__(self, wordle: Wordle):
+    def __init__(self, wordle: Wordle, policy):
         self.wordle = wordle
+        self.policy = policy
         words = open("validWords.txt")
-        self.validWords = words.readlines()
+        self.validWords = words.read().splitlines()
         words.close()
     
     def __checkForIncorrect(self, word, letter, states):
@@ -30,15 +68,14 @@ class WordleAI:
         for index, state in enumerate(states):
             self.validWords = [word for word in self.validWords if self.filterByLetter(word, state, guess[index], index, states)]
 
-    def scoreWord(self, word):
-        self.validWords
 
     def makeGuess(self):
-            return random.choice(self.validWords).strip("\n")
+        bestWord = max(self.validWords, key=self.policy(self.validWords))
+        return bestWord
         
     def play(self):
         guessNum = 0
-        while guessNum < self.wordle.maxGuesses:
+        while guessNum < self.wordle.maxGuesses and not self.wordle.checkForWin():
             AIguess = self.makeGuess()
             print(AIguess)
             states = self.wordle.makeGuess(AIguess)
@@ -46,6 +83,11 @@ class WordleAI:
             print(self.wordle.getColoredGuess(states, AIguess))
             guessNum += 1
 
-AI = WordleAI(Wordle("perky", 6))
-AI.play()
+word = "stout"
+AI1 = WordleAI(Wordle(word, 6), scoreWordsByLetterFrequency)
+AI2 = WordleAI(Wordle(word, 6), scoreWordsByLetterPlacementFrequency)
+AI1.play()
+print("Win:", AI1.wordle.checkForWin(), "Guesses:", AI1.wordle.guessNum)
+AI2.play()
+print("Win:", AI2.wordle.checkForWin(), "Guesses:", AI2.wordle.guessNum)
         

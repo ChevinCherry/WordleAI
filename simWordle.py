@@ -61,7 +61,7 @@ class Wordle:
 if (__name__ == "__main__"):
     maxGuesses = 6
     allWords = open("validWords.txt").readlines()
-    wordle = random.choice(allWords)
+    wordle = random.choice(allWords).strip("\n")
     game = Wordle(wordle, maxGuesses)
     guessNum = 0
     win = False
