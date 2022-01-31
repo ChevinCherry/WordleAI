@@ -2,6 +2,7 @@
 import random
 from termcolor import colored
 
+LetterStates = ["correct", "wrongPlace", "incorrect"]
 StateToColor = {"correct": "green", "wrongPlace": "yellow", "incorrect": "white"}
 
 class Wordle:
