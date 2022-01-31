@@ -104,10 +104,20 @@ def scoreWordsByExpectedValue(allWords, validWords, guessNum):
     if len(validWords) == 1:
         return validWords[0]
     if guessNum == 0:
-        return "aeros"
+        return "raise"
     expectedValues = [0.0] * len(allWords)
     wordIndex = 0
     while wordIndex < len(allWords):
+        print(allWords[wordIndex][0])
         wordIndex = getExpectedValues(expectedValues, len(validWords), validWords, allWords, wordIndex, 0)
     minExpected = min(expectedValues)
-    return allWords[expectedValues.index(minExpected)]
+    allMinWords = [word for index, word in enumerate(allWords) if expectedValues[index] == minExpected]
+    print(allMinWords)
+    validMinWords = [word for word in allMinWords if word in validWords]
+    print(validMinWords)
+    selection = ""
+    if len(validMinWords) > 0:
+        selection = validMinWords[0]
+    else:
+        selection = allMinWords[0]
+    return selection
