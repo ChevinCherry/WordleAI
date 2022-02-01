@@ -1,6 +1,7 @@
 
 import random
 from termcolor import colored
+from utils import checkWrongPlace
 
 LetterStates = ["correct", "wrongPlace", "incorrect"]
 StateToColor = {"correct": "green", "wrongPlace": "yellow", "incorrect": "white"}
@@ -26,18 +27,6 @@ class Wordle:
         for index, state in enumerate(states):
             string += colored(guess[index], StateToColor[state])
         return string
-
-    def __checkWrongPlace(self, guess, letter):
-        if letter not in self.wordle:
-            return False
-        appearances = 0
-        correctGuesses = 0
-        for index, gLetter in enumerate(guess):
-            if self.wordle[index] == letter:
-                appearances += 1
-                if gLetter == letter:
-                    correctGuesses += 1
-        return appearances > correctGuesses
     
     def makeGuess(self, guess):
         if (self.guessNum >= self.maxGuesses):
@@ -48,7 +37,7 @@ class Wordle:
         for index, letter in enumerate(guess):
             if letter == self.wordle[index]:
                 validity[index] = "correct"
-            elif self.__checkWrongPlace(guess, letter):
+            elif checkWrongPlace(self.wordle, guess, letter, index):
                 validity[index] = "wrongPlace"
             else:
                 validity[index] = "incorrect"
@@ -63,7 +52,7 @@ if (__name__ == "__main__"):
     maxGuesses = 6
     allWords = open("validWords.txt").readlines()
     wordle = random.choice(allWords).strip("\n")
-    game = Wordle(wordle, maxGuesses)
+    game = Wordle("sloth", maxGuesses)
     guessNum = 0
     win = False
     while guessNum < maxGuesses and not game.checkForWin():

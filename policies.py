@@ -1,6 +1,3 @@
-from simWordle import LetterStates
-from utils import filterValidWords
-
 ### WORD SCORING POLICIES ###
 def singleWordPolicy(allWords, validWords, guessNum):
     return "tests"
@@ -17,11 +14,9 @@ def scoreWordsByLetterPlacementFrequency(allWords, validWords, guessNum):
                 letterCounts[index][letter] = 1
     def key(word):
         score = 0
-        seen = []
         for index, letter in enumerate(word):
-            if letter not in seen and letter in letterCounts[index]:
+            if letter in letterCounts[index]:
                 score += letterCounts[index][letter]
-                seen.append(letter)
         return score
     return max(validWords, key=key)
     
@@ -45,18 +40,6 @@ def scoreWordsByLetterFrequency(allWords, validWords, guessNum):
         return score
     return max(validWords, key=key)
 
-def generateAllPossibleStates(ofLength):
-    if ofLength == 0:
-        return [[]]
-    statesOfLowerLength = generateAllPossibleStates(ofLength-1)
-    stateList = []
-    for lowerState in statesOfLowerLength:
-        for addState in LetterStates:
-            stateList.append(lowerState + [addState])
-    return stateList
-
-allStates = generateAllPossibleStates(5)
-
 def wordsEqualUntilIndex(word1, word2, index):
     for i in range(index+1):
         if word1[i] != word2[i]:
@@ -66,6 +49,8 @@ def wordsEqualUntilIndex(word1, word2, index):
 def getExpectedValues(expectedValues, numValidWords, remainingWords, allWords, wordIndex, charIndex):
     if (charIndex > 4):
         numRemaining = len(remainingWords)
+        if numRemaining == 1 and allWords[wordIndex] == remainingWords[0]:
+            return wordIndex + 1
         expectedValues[wordIndex] += numRemaining*numRemaining / numValidWords
         return wordIndex + 1
 
@@ -104,20 +89,21 @@ def scoreWordsByExpectedValue(allWords, validWords, guessNum):
     if len(validWords) == 1:
         return validWords[0]
     if guessNum == 0:
+        # First guess probabilities are always the same, so to save time I use a precalculated "best" word
         return "raise"
     expectedValues = [0.0] * len(allWords)
     wordIndex = 0
+    start = "\rLet me think... - ["
+    letterString = ""
     while wordIndex < len(allWords):
-        print(allWords[wordIndex][0])
+        letterString += allWords[wordIndex][0]
+        spaces = " " * (26 - len(letterString))
+        print(start, letterString, spaces, end='] - ', sep='')
         wordIndex = getExpectedValues(expectedValues, len(validWords), validWords, allWords, wordIndex, 0)
+    # We round here to account for computer precision error
+    for i in range(len(expectedValues)):
+        expectedValues[i] = round(expectedValues[i], 10)
     minExpected = min(expectedValues)
-    allMinWords = [word for index, word in enumerate(allWords) if expectedValues[index] == minExpected]
-    print(allMinWords)
-    validMinWords = [word for word in allMinWords if word in validWords]
-    print(validMinWords)
-    selection = ""
-    if len(validMinWords) > 0:
-        selection = validMinWords[0]
-    else:
-        selection = allMinWords[0]
-    return selection
+    minWords = [word for index, word in enumerate(allWords) if expectedValues[index] == minExpected]
+    print(minExpected)
+    return minWords[0]
