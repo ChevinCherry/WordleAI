@@ -6,7 +6,7 @@ from policies import scoreWordsByExpectedValue, scoreWordsByLetterFrequency, sco
 class evaluateModel:
 
     def __init__(self, policies: list):
-        words = open('validWords.txt')
+        words = open('answers.txt')
         self.testWords = words.read().splitlines()
         self.testPolicies = policies
 
@@ -39,7 +39,7 @@ class evaluateModel:
         self.__printStats(scores)
 
 if __name__ == "__main__":
-    policies = [scoreWordsByExpectedValue, scoreWordsByLetterPlacementFrequency]
+    policies = [scoreWordsByExpectedValue]
     eval = evaluateModel(policies)
     eval.run(100)
             

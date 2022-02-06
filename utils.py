@@ -43,6 +43,6 @@ def statesAreEqual(stateList1, stateList2):
 
 
 def filterValidWords(validWordList, guess, states):
-    validWords = [word for word in validWordList if statesAreEqual(getStatesForGuess(word, guess), states)]
+    validWords = [wordFreq for wordFreq in validWordList if statesAreEqual(getStatesForGuess(wordFreq[0], guess), states)]
     return validWords
     

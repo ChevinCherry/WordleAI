@@ -8,10 +8,17 @@ class WordleAI:
     def __init__(self, wordle: Wordle, policy):
         self.wordle = wordle
         self.policy = policy
-        words = open("validWords.txt")
-        self.validWords = words.read().splitlines()
-        self.allWords = deepcopy(self.validWords)
+        words = open("validWordAndFreq.txt")
+        wordsAndFreqStrings = words.read().splitlines()
+        wordAndFreqs = []
+        for wf in wordsAndFreqStrings:
+            strings = wf.split(" ")
+            word = strings[0]
+            freq = float(strings[1])
+            wordAndFreqs.append((word, freq))
         words.close()
+        self.validWords = wordAndFreqs
+        self.allWords = deepcopy(wordAndFreqs)
 
     def makeGuess(self):
         return self.policy(self.allWords, self.validWords, self.wordle.guessNum)
@@ -28,7 +35,7 @@ class WordleAI:
             guessNum += 1
 
 if __name__ == "__main__":
-    word = "those"
+    word = "cross"
     AI = WordleAI(Wordle(word, 6), scoreWordsByExpectedValue)
     AI.play(True)
     print("Win:", AI.wordle.checkForWin(), "Guesses:", AI.wordle.guessNum)

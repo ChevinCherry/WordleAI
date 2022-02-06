@@ -1,3 +1,4 @@
+import sys
 ### WORD SCORING POLICIES ###
 def singleWordPolicy(allWords, validWords, guessNum):
     return "tests"
@@ -49,17 +50,18 @@ def wordsEqualUntilIndex(word1, word2, index):
 def getExpectedValues(expectedValues, numValidWords, remainingWords, allWords, wordIndex, charIndex):
     if (charIndex > 4):
         numRemaining = len(remainingWords)
-        if numRemaining == 1 and allWords[wordIndex] == remainingWords[0]:
+        if numRemaining == 1 and allWords[wordIndex][0] == remainingWords[0]:
             return wordIndex + 1
-        expectedValues[wordIndex] += numRemaining*numRemaining / numValidWords
+        raritySum = sum([1-wordFreq[1] for wordFreq in remainingWords])
+        expectedValues[wordIndex] += raritySum*numRemaining / numValidWords
         return wordIndex + 1
 
-    curWord = allWords[wordIndex]
+    curWord = allWords[wordIndex][0]
     
 
     if len(remainingWords) == 0:
         newWordIndex = wordIndex
-        while wordsEqualUntilIndex(curWord, allWords[newWordIndex], charIndex): 
+        while wordsEqualUntilIndex(curWord, allWords[newWordIndex][0], charIndex): 
             newWordIndex += 1
             if newWordIndex >= len(allWords):
                 break
@@ -67,16 +69,16 @@ def getExpectedValues(expectedValues, numValidWords, remainingWords, allWords, w
     
     curChar = curWord[charIndex]
     # Correct case
-    correctWords = [word for word in remainingWords if word[charIndex] == curChar]
+    correctWords = [word for word in remainingWords if word[0][charIndex] == curChar]
 
     # Incorrect case
-    incorrectWords = [word for word in remainingWords if curChar not in word]
+    incorrectWords = [word for word in remainingWords if curChar not in word[0]]
 
     # Wrong place case
     wrongPlaceWords = [word for word in remainingWords if word not in correctWords and word not in incorrectWords]
 
     newWordIndex = wordIndex
-    while wordsEqualUntilIndex(curWord, allWords[newWordIndex], charIndex):
+    while wordsEqualUntilIndex(curWord, allWords[newWordIndex][0], charIndex):
         wi1 = getExpectedValues(expectedValues, numValidWords, correctWords, allWords, newWordIndex, charIndex+1)
         wi2 = getExpectedValues(expectedValues, numValidWords, incorrectWords, allWords, newWordIndex, charIndex+1)
         newWordIndex = getExpectedValues(expectedValues, numValidWords, wrongPlaceWords, allWords, newWordIndex, charIndex+1)
@@ -87,16 +89,25 @@ def getExpectedValues(expectedValues, numValidWords, remainingWords, allWords, w
 
 def scoreWordsByExpectedValue(allWords, validWords, guessNum):
     if len(validWords) == 1:
-        return validWords[0]
+        return validWords[0][0]
     if guessNum == 0:
         # First guess probabilities are always the same, so to save time I use a precalculated "best" word
-        return "raise"
+        return "lares"
+    if guessNum >= 2:
+        print(validWords)
+        maxWord = validWords[0][0]
+        maxFreq = validWords[0][1]
+        for wordFreq in validWords:
+            if wordFreq[1] > maxFreq:
+                maxWord = wordFreq[0]
+                maxFreq = wordFreq[1]
+        return maxWord
     expectedValues = [0.0] * len(allWords)
     wordIndex = 0
     start = "\rLet me think... - ["
     letterString = ""
     while wordIndex < len(allWords):
-        letterString += allWords[wordIndex][0]
+        letterString += allWords[wordIndex][0][0]
         spaces = " " * (26 - len(letterString))
         print(start, letterString, spaces, end='] - ', sep='')
         wordIndex = getExpectedValues(expectedValues, len(validWords), validWords, allWords, wordIndex, 0)
@@ -105,5 +116,6 @@ def scoreWordsByExpectedValue(allWords, validWords, guessNum):
         expectedValues[i] = round(expectedValues[i], 10)
     minExpected = min(expectedValues)
     minWords = [word for index, word in enumerate(allWords) if expectedValues[index] == minExpected]
+    print(minWords)
     print(minExpected)
-    return minWords[0]
+    return minWords[0][0]
