@@ -1,7 +1,7 @@
 from copy import deepcopy
 from policies import scoreWordsByExpectedValue, scoreWordsByLetterFrequency, scoreWordsByLetterPlacementFrequency, singleWordPolicy
 from simWordle import Wordle
-from utils import filterValidWords
+from utils import filterValidWords, normalizeWordProbs
 
 class WordleAI:
 
@@ -21,7 +21,7 @@ class WordleAI:
         self.allWords = deepcopy(wordAndFreqs)
 
     def makeGuess(self):
-        return self.policy(self.allWords, self.validWords, self.wordle.guessNum)
+        return self.policy(self.allWords, normalizeWordProbs(self.validWords), self.wordle.guessNum)
         
     def play(self, output=True):
         guessNum = 0
@@ -35,7 +35,7 @@ class WordleAI:
             guessNum += 1
 
 if __name__ == "__main__":
-    word = "cross"
+    word = "grass"
     AI = WordleAI(Wordle(word, 6), scoreWordsByExpectedValue)
     AI.play(True)
     print("Win:", AI.wordle.checkForWin(), "Guesses:", AI.wordle.guessNum)

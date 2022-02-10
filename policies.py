@@ -52,8 +52,8 @@ def getExpectedValues(expectedValues, numValidWords, remainingWords, allWords, w
         numRemaining = len(remainingWords)
         if numRemaining == 1 and allWords[wordIndex][0] == remainingWords[0]:
             return wordIndex + 1
-        raritySum = sum([1-wordFreq[1] for wordFreq in remainingWords])
-        expectedValues[wordIndex] += raritySum*numRemaining / numValidWords
+        probSum = sum([wordFreq[1] for wordFreq in remainingWords])
+        expectedValues[wordIndex] += numRemaining*probSum
         return wordIndex + 1
 
     curWord = allWords[wordIndex][0]

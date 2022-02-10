@@ -45,4 +45,12 @@ def statesAreEqual(stateList1, stateList2):
 def filterValidWords(validWordList, guess, states):
     validWords = [wordFreq for wordFreq in validWordList if statesAreEqual(getStatesForGuess(wordFreq[0], guess), states)]
     return validWords
+
+def normalizeWordProbs(wordList):
+    sum = 0
+    for wordFreq in wordList:
+        sum += wordFreq[1]
+    normalized = [(wordFreq[0], wordFreq[1]/sum) for wordFreq in wordList]
+    print(normalized)
+    return normalized
     

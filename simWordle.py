@@ -52,7 +52,7 @@ if (__name__ == "__main__"):
     maxGuesses = 6
     allWords = open("validWords.txt").readlines()
     wordle = random.choice(allWords).strip("\n")
-    game = Wordle("sloth", maxGuesses)
+    game = Wordle("humor", maxGuesses)
     guessNum = 0
     win = False
     while guessNum < maxGuesses and not game.checkForWin():
