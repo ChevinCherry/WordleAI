@@ -35,7 +35,7 @@ class WordleAI:
             guessNum += 1
 
 if __name__ == "__main__":
-    word = "grass"
+    word = "swill"
     AI = WordleAI(Wordle(word, 6), scoreWordsByExpectedValue)
     AI.play(True)
     print("Win:", AI.wordle.checkForWin(), "Guesses:", AI.wordle.guessNum)

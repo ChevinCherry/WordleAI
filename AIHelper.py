@@ -18,12 +18,13 @@ maxGuesses = 6
 
 helper = WordleAI(Wordle("fills", maxGuesses), scoreWordsByExpectedValue)
 guessNum = 0
+allWords = open("validWords.txt").read().splitlines()
 while guessNum < maxGuesses:
     validGuess = False
     while not validGuess:
         print("Enter guess:")
         guess = input().strip("\n")
-        validGuess = guess in helper.allWords
+        validGuess = guess in allWords
         if not validGuess:
             print("Invalid.")
     print("Enter states:")
